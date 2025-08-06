@@ -1,13 +1,15 @@
 package com.example.springcase.model;
 
+import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.hibernate.annotations.GenericGenerator;
 
-import jakarta.validation.constraints.*;
 
-@Document(collection = "users")
+import java.util.Set;
+import java.util.UUID;
+
+@Entity
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,24 +18,31 @@ import jakarta.validation.constraints.*;
 public class User {
 
     @Id
-    private String id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(updatable = false, nullable = false)
+    private UUID id;
 
-    @NotBlank
-    @Size(min = 3, max = 50)
+    @Column(unique = true, nullable = false)
     private String username;
 
-    @NotBlank
-    @Size(min = 8)
-    private String password;
+    @Column(nullable = false)
+    private String password; // Şifre hashlenmiş olarak saklanmalı
 
-    @NotBlank
-    @Size(max = 100)
-    private String fullName;
+    @Column(unique = true, nullable = false)
+    private String email;
 
-    @DBRef
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name="user_id"),
+        inverseJoinColumns = @JoinColumn(name="role_id")
+    )
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false)
     private boolean enabled = true;
-
-    private boolean enabled1 = false;
 }

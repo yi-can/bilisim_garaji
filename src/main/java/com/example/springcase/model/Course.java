@@ -1,13 +1,14 @@
 package com.example.springcase.model;
 
+import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import jakarta.validation.constraints.*;
-import java.util.List;
+import java.util.UUID;
 
-@Document(collection = "courses")
+import org.hibernate.annotations.GenericGenerator;
+
+@Entity
+@Table(name = "courses")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,16 +17,19 @@ import java.util.List;
 public class Course {
 
     @Id
-    private String id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(updatable = false, nullable = false)
+    private UUID id;
 
-    @NotBlank
-    @Size(max = 150)
+    @Column(nullable = false, length = 150)
     private String title;
 
-    @Size(max = 1000)
+    @Column(length = 1000)
     private String description;
 
-    private String teacherId; // MongoDB'de ilişkisel @ManyToOne yok, öğretmen ID’si tutulur
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "teacher_id")
+    private User teacher;  // Teacher olarak User entity’sinden referans
 
-    private List<String> enrollmentIds; // İlişkili Enrollment ID’leri listelenebilir
 }
