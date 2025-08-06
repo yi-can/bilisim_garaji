@@ -1,20 +1,43 @@
 version: '3.8'
+
 services:
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: springdb
+  mongodb:
+    image: mongo:7
+    container_name: mongo
     ports:
-      - "5432:5432"
+      - "27017:27017"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mongo-data:/data/db
+    networks:
+      - backend
 
   redis:
     image: redis:7
+    container_name: redis
     ports:
       - "6379:6379"
+    networks:
+      - backend
+
+  app:
+    build: .
+    image: your-app-image
+    depends_on:
+      - mongodb
+      - redis
+    environment:
+      SPRING_DATA_MONGODB_HOST: mongodb
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_DATABASE: lms_db
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    networks:
+      - backend
+    ports:
+      - "9090:9090"
 
 volumes:
-  pgdata:
+  mongo-data:
+
+networks:
+  backend:

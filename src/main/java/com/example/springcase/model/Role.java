@@ -1,12 +1,10 @@
 package com.example.springcase.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.UUID;
-
-@Entity
-@Table(name = "roles")
+@Document(collection = "roles")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,9 +13,7 @@ import java.util.UUID;
 public class Role {
 
     @Id
-    @GeneratedValue
-    private UUID id;
+    private String id;
 
-    @Column(nullable = false, unique = true)
     private String name;  // Örn: SUPER_ADMIN, TEACHER, STUDENT
 }

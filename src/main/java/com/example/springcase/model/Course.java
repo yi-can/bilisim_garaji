@@ -1,16 +1,13 @@
 package com.example.springcase.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import jakarta.validation.constraints.*;
+import java.util.List;
 
-@Entity
-@Table(name = "courses")
+@Document(collection = "courses")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,26 +16,16 @@ import java.util.UUID;
 public class Course {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-        name = "UUID",
-        strategy = "org.hibernate.id.UUIDGenerator"
-    )
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+    private String id;
 
     @NotBlank
     @Size(max = 150)
-    @Column(nullable = false)
     private String title;
 
     @Size(max = 1000)
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id", nullable = false)
-    private User teacher;
+    private String teacherId; // MongoDB'de ilişkisel @ManyToOne yok, öğretmen ID’si tutulur
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Enrollment> enrollments = new HashSet<>();
+    private List<String> enrollmentIds; // İlişkili Enrollment ID’leri listelenebilir
 }

@@ -1,14 +1,13 @@
 package com.example.springcase.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
-import java.util.UUID;
+import jakarta.validation.constraints.*;
 
-@Entity
-@Table(name = "users")
+@Document(collection = "users")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,32 +16,24 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-        name = "UUID",
-        strategy = "org.hibernate.id.UUIDGenerator"
-    )
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+    private String id;
 
     @NotBlank
     @Size(min = 3, max = 50)
-    @Column(unique = true, nullable = false)
     private String username;
 
     @NotBlank
     @Size(min = 8)
-    @Column(nullable = false)
     private String password;
 
     @NotBlank
     @Size(max = 100)
     private String fullName;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", nullable = false)
+    @DBRef
     private Role role;
 
-    @Column(nullable = false)
     private boolean enabled = true;
+
+    private boolean enabled1 = false;
 }
