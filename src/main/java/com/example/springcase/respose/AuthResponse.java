@@ -1,9 +1,9 @@
 package com.example.springcase.respose;
 
-public class AuthenticationResponse {
+public class AuthResponse {
     private String token;
 
-    public AuthenticationResponse(String token) {
+    public AuthResponse(String token) {
         this.token = token;
     }
 

@@ -6,6 +6,8 @@ import com.example.springcase.model.enums.ResourceName;
 import com.example.springcase.repository.PermissionRepository;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -29,6 +31,12 @@ public class PermissionServiceImpl implements PermissionService {
         else if (act.equals("update")) return perm.isCanUpdate();
         else if (act.equals("delete")) return perm.isCanDelete();
         else return false;
+    }
+
+    @Override
+    public boolean hasPermission(Authentication authentication, ResourceName resource, String action) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'hasPermission'");
     }
 
 }

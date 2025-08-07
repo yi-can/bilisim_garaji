@@ -44,5 +44,13 @@ public class EnrollmentService {
         Enrollment enrollment = findById(id);
         enrollmentRepository.delete(enrollment);
     }
+
+    public List<Enrollment> findByStudentId(Long studentId) {
+    return enrollmentRepository.findByStudentId(studentId);
+    }
+
+    public List<Enrollment> findByStudentId(UUID studentId) {
+    return enrollmentRepository.findByStudent_Id(studentId);
+}
 }
 

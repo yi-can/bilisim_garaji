@@ -5,6 +5,7 @@ import com.example.springcase.model.User;
 import com.example.springcase.model.enums.ResourceName;
 import com.example.springcase.service.EnrollmentService;
 import com.example.springcase.service.PermissionService;
+import org.springframework.security.access.AccessDeniedException;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,13 +27,20 @@ public class EnrollmentController {
 
     @GetMapping
     public ResponseEntity<?> getAllEnrollments(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
+            User user = (User) authentication.getPrincipal();
 
-        if (!permissionService.hasPermission(user.getRole(), ResourceName.ENROLLMENT, "read")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bu işlemi yapma yetkiniz yok");
+            if (!permissionService.hasPermission(user.getRole(), ResourceName.ENROLLMENT, "read")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bu işlemi yapma yetkiniz yok");
         }
 
-        List<Enrollment> enrollments = enrollmentService.findAll();
+        List<Enrollment> enrollments;
+
+        if (user.getRole().getName().equals("STUDENT")) {
+            enrollments = enrollmentService.findByStudentId(user.getId());
+        } else {
+            enrollments = enrollmentService.findAll();
+        }
+
         return ResponseEntity.ok(enrollments);
     }
 
@@ -45,6 +53,12 @@ public class EnrollmentController {
         }
 
         Enrollment enrollment = enrollmentService.findById(id);
+
+        // Kendi verisine erişim kontrolü
+        if (user.getRole().getName().equals("STUDENT") && !enrollment.getStudent().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Bu kayda erişim yetkiniz yok.");
+        }
+
         return ResponseEntity.ok(enrollment);
     }
 

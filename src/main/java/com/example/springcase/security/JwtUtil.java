@@ -1,75 +1,59 @@
 package com.example.springcase.security;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
-
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
-import org.springframework.security.core.Authentication;
-
 
 @Component
 public class JwtUtil {
 
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Rastgele gizli anahtar oluşturulur (prod'da sabit olmalı)
+    private final String SECRET_KEY = "supersecretkey123"; // Güvenli yerde sakla
 
-    private final long jwtExpirationMs = 1000 * 60 * 60 * 10; // 10 saat
+    private final long ACCESS_TOKEN_VALIDITY = 1000 * 60 * 15; // 15 dk
+    private final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 7; // 7 gün
 
+    public String generateAccessToken(String username) {
+        return createToken(username, ACCESS_TOKEN_VALIDITY);
+    }
 
-    // Token'dan username (subject) al
+    public String generateRefreshToken(String username) {
+        return createToken(username, REFRESH_TOKEN_VALIDITY);
+    }
+
+    private String createToken(String username, long validity) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + validity))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
+    }
+
+    public boolean validateToken(String token, String username) {
+        final String subject = extractUsername(token);
+        return (subject.equals(username) && !isTokenExpired(token));
+    }
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // Genel claim okuma
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = parseClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
-    // Token oluşturma
-    public String generateToken(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        return Jwts.builder()
-                .setSubject(userDetails.getUsername())
-                .claim("authorities", userDetails.getAuthorities().toString())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(SignatureAlgorithm.HS512, key)
-                .compact();
-    }
-
-    // Token doğrulama
-    public boolean validateToken(String token, String username) {
-        final String tokenUsername = extractUsername(token);
-        return (tokenUsername.equals(username) && !isTokenExpired(token));
-    }
-
-    // Token süresi dolmuş mu?
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    private Date extractExpiration(String token) {
+    public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    // Token'ı parse et
-    private Claims parseClaims(String token) {
-        try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (JwtException e) {
-            // Hatalı token
-            throw new IllegalArgumentException("Invalid JWT token");
-        }
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = parseToken(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims parseToken(String token) {
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
     }
 }

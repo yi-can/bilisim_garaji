@@ -1,7 +1,10 @@
 package com.example.springcase.model.enums;
 
 public enum ResourceName {
-    COURSE,
     USER,
-    ENROLLMENT
+    COURSE,
+    ENROLLMENT,
+    CLASSROOM,
+    ORGANIZATION,
+    TEACHER_CLASSROOM_ASSIGNMENT
 }
