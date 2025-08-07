@@ -42,4 +42,9 @@ public class UserService {
     public void delete(UUID id) {
         userRepository.deleteById(id);
     }
+
+    public User create(User user) {
+        // İstersen burada kullanıcı doğrulama, şifre hashleme vs yapabilirsin
+        return userRepository.save(user);
+    }
 }

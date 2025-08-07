@@ -1,48 +1,85 @@
 package com.example.springcase.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
 import com.example.springcase.model.Enrollment;
+import com.example.springcase.model.User;
+import com.example.springcase.model.enums.ResourceName;
 import com.example.springcase.service.EnrollmentService;
+import com.example.springcase.service.PermissionService;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
+
 @RestController
 @RequestMapping("/api/enrollments")
-@PreAuthorize("hasRole('SUPERADMIN')")  // Yalnızca SuperAdmin erişebilir
+@RequiredArgsConstructor
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
-
-    public EnrollmentController(EnrollmentService enrollmentService) {
-        this.enrollmentService = enrollmentService;
-    }
+    private final PermissionService permissionService;
 
     @GetMapping
-    public ResponseEntity<List<Enrollment>> getAllEnrollments() {
-        return ResponseEntity.ok(enrollmentService.findAll());
+    public ResponseEntity<?> getAllEnrollments(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        if (!permissionService.hasPermission(user.getRole(), ResourceName.ENROLLMENT, "read")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bu işlemi yapma yetkiniz yok");
+        }
+
+        List<Enrollment> enrollments = enrollmentService.findAll();
+        return ResponseEntity.ok(enrollments);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Enrollment> getEnrollmentById(@PathVariable UUID id) {
-        return ResponseEntity.ok(enrollmentService.findById(id));
+    public ResponseEntity<?> getEnrollmentById(@PathVariable UUID id, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        if (!permissionService.hasPermission(user.getRole(), ResourceName.ENROLLMENT, "read")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Yetkisiz erişim");
+        }
+
+        Enrollment enrollment = enrollmentService.findById(id);
+        return ResponseEntity.ok(enrollment);
     }
 
     @PostMapping
-    public ResponseEntity<Enrollment> createEnrollment(@RequestBody Enrollment enrollment) {
-        return ResponseEntity.ok(enrollmentService.create(enrollment));
+    public ResponseEntity<?> createEnrollment(@RequestBody Enrollment enrollment, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        if (!permissionService.hasPermission(user.getRole(), ResourceName.ENROLLMENT, "create")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Kayıt oluşturma yetkiniz yok");
+        }
+
+        Enrollment created = enrollmentService.create(enrollment);
+        return ResponseEntity.ok(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Enrollment> updateEnrollment(@PathVariable UUID id, @RequestBody Enrollment updatedEnrollment) {
-        return ResponseEntity.ok(enrollmentService.update(id, updatedEnrollment));
+    public ResponseEntity<?> updateEnrollment(@PathVariable UUID id, @RequestBody Enrollment updatedEnrollment, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        if (!permissionService.hasPermission(user.getRole(), ResourceName.ENROLLMENT, "update")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Kayıt güncelleme yetkiniz yok");
+        }
+
+        Enrollment updated = enrollmentService.update(id, updatedEnrollment);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEnrollment(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteEnrollment(@PathVariable UUID id, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        if (!permissionService.hasPermission(user.getRole(), ResourceName.ENROLLMENT, "delete")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Silme yetkiniz yok");
+        }
+
         enrollmentService.delete(id);
         return ResponseEntity.noContent().build();
     }

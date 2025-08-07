@@ -1,8 +1,21 @@
 package com.example.springcase.model;
 
-public enum Role {
-    ROLE_SUPER_ADMIN,
-    ROLE_TEACHER,
-    ROLE_STUDENT
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class Role {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+
+    private int profileId;
 }
 

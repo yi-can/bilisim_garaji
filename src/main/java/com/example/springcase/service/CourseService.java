@@ -3,43 +3,22 @@ package com.example.springcase.service;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.stereotype.Service;
-
 import com.example.springcase.model.Course;
-import com.example.springcase.repository.CourseRepository;
+import com.example.springcase.model.User;
 
-@Service
-public class CourseService {
+public interface CourseService {
 
-    private final CourseRepository courseRepository;
+    List<Course> findAll();
 
-    public CourseService(CourseRepository courseRepository) {
-        this.courseRepository = courseRepository;
-    }
+    Course findById(UUID id);
 
-    public List<Course> findAll() {
-        return courseRepository.findAll();
-    }
+    Course create(Course course);
 
-    public Course findById(UUID id) {
-        return courseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
-    }
+    Course update(UUID id, Course updatedCourse);
 
-    public Course create(Course course) {
-        return courseRepository.save(course);
-    }
+    void delete(UUID id);
 
-    public Course update(UUID id, Course updatedCourse) {
-        Course course = findById(id);
-        course.setTitle(updatedCourse.getTitle());
-        course.setDescription(updatedCourse.getDescription());
-        course.setTeacher(updatedCourse.getTeacher());
-        return courseRepository.save(course);
-    }
+    List<Course> findCoursesByTeacher(User teacher);
 
-    public void delete(UUID id) {
-        Course course = findById(id);
-        courseRepository.delete(course);
-    }
+    List<Course> findCoursesForStudent(User student);
 }

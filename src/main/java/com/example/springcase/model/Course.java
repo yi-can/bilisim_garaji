@@ -3,6 +3,7 @@ package com.example.springcase.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -28,8 +29,10 @@ public class Course {
     @Column(length = 1000)
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id")
-    private User teacher;  // Teacher olarak User entity’sinden referans
+    @ManyToOne
+    private User teacher;
+
+    @ManyToMany(mappedBy = "courses")
+    private List<User> enrolledStudents;
 
 }
