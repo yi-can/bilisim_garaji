@@ -1,8 +1,12 @@
 package com.example.springcase.repository;
 
+import com.example.springcase.model.Role;
 import com.example.springcase.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,4 +16,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
 
     Optional<User> findByUsername(String username);
+
+    @Query("SELECT u FROM User u WHERE u.classroom.id IN :classroomIds AND u.role = :role")
+    List<User> findByClassroomIdAndRole(@Param("classroomIds") List<UUID> classroomIds, @Param("role") Role role);
+
+    List<User> findByClassroomIdInAndRole(List<UUID> classroomIds, Role role);
+
 }

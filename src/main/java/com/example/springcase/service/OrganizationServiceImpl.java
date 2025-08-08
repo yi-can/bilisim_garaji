@@ -1,44 +1,51 @@
 package com.example.springcase.service;
 
+import com.example.springcase.dto.OrganizationDto;
+import com.example.springcase.model.Brand;
 import com.example.springcase.model.Organization;
+import com.example.springcase.repository.BrandRepository;
 import com.example.springcase.repository.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class OrganizationServiceImpl implements OrganizationService {
+public class OrganizationServiceImpl {
 
     private final OrganizationRepository organizationRepository;
+    private final BrandRepository brandRepository;
 
-    @Override
-    public Organization create(Organization organization) {
-        return organizationRepository.save(organization);
+    public OrganizationDto createOrganization(OrganizationDto dto) {
+        Brand brand = brandRepository.findById(dto.getBrandId())
+                .orElseThrow(() -> new RuntimeException("Brand not found"));
+
+        Organization org = Organization.builder()
+                .name(dto.getName())
+                .brand(brand)
+                .build();
+
+        org = organizationRepository.save(org);
+
+        return mapToDto(org);
     }
 
-    @Override
-    public Organization update(UUID id, Organization organization) {
-        Organization existing = findById(id);
-        existing.setName(organization.getName());
-        return organizationRepository.save(existing);
+    public List<OrganizationDto> getAllOrganizations() {
+        return organizationRepository.findAll()
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public void delete(UUID id) {
-        organizationRepository.deleteById(id);
-    }
-
-    @Override
-    public Organization findById(UUID id) {
-        return organizationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Organization bulunamadı: " + id));
-    }
-
-    @Override
-    public List<Organization> findAll() {
-        return organizationRepository.findAll();
+    private OrganizationDto mapToDto(Organization org) {
+        return OrganizationDto.builder()
+                .id(org.getId())
+                .name(org.getName())
+                .brandId(org.getBrand() != null ? org.getBrand().getId() : null)
+                .brandName(org.getBrand() != null ? org.getBrand().getName() : null)
+                .build();
     }
 }

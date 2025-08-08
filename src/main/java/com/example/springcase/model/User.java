@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,22 +26,19 @@ public class User {
     private String username;
 
     @Column(nullable = false)
-    private String password; // Şifre hashlenmiş olarak saklanmalı
+    private String password;
 
     @Column(unique = true, nullable = false)
     private String email;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "user_roles",
-        joinColumns = @JoinColumn(name="user_id"),
-        inverseJoinColumns = @JoinColumn(name="role_id")
-    )
-    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
     @Column(nullable = false)
     private boolean enabled = true;
+
+    // Öğretmen-sınıf atamaları (sadece öğretmen olanlar için)
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TeacherClassroomAssignment> classroomAssignments;
 }

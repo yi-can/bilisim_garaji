@@ -8,5 +8,4 @@ import com.example.springcase.model.Organization;
 import java.util.UUID;
 
 public interface OrganizationRepository extends JpaRepository<Organization, UUID> {
-    // Organizasyon adıyla arama gibi özel sorgular eklenebilir
 }

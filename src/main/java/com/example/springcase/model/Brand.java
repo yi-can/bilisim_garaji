@@ -7,12 +7,12 @@ import org.hibernate.annotations.GenericGenerator;
 import java.util.UUID;
 
 @Entity
-@Table(name = "organizations")
+@Table(name = "brands")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Organization {
+public class Brand {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name="UUID", strategy = "org.hibernate.id.UUIDGenerator")
@@ -22,7 +22,6 @@ public class Organization {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "brand_id")
-    private Brand brand;
+    @Column(unique = true, nullable = false)
+    private String code;  // otomatik atanacak (krm1, krm2 ...)
 }

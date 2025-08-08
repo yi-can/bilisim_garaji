@@ -3,6 +3,7 @@ package com.example.springcase.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -14,20 +15,24 @@ import java.util.UUID;
 public class Classroom {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "UUID")
+    @Column(updatable = false, nullable = false)
     private UUID id;
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
-    // Öğrenciler atanabilir (isteğe bağlı)
+    // Öğretmen-sınıf atamaları (ilişki)
+    @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TeacherClassroomAssignment> teacherAssignments;
+    
+    // İstersen öğrenciler ve kurslar için yorum satırlarını açabilirsin
     // @ManyToMany(mappedBy = "classrooms")
     // private List<User> students;
 
-    // Kurslar atanabilir (isteğe bağlı)
     // @ManyToMany(mappedBy = "classrooms")
     // private List<Course> courses;
 }
