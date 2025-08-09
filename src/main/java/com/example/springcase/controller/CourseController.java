@@ -25,17 +25,6 @@ public class CourseController {
     private final CourseService courseService;
     private final PermissionService permissionService;
 
-    @GetMapping
-    public ResponseEntity<?> getAllCourses(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-
-        if (!permissionService.hasPermission(user.getRole(), ResourceName.COURSE, "read")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bu işlemi yapma yetkiniz yok");
-        }
-        
-        return ResponseEntity.ok(courseService.findAll());
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getCourseById(@PathVariable UUID id, Authentication authentication) {
         User user = (User) authentication.getPrincipal();

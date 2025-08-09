@@ -5,6 +5,7 @@ import com.example.springcase.dto.UserDto;
 import com.example.springcase.model.Role;
 import com.example.springcase.model.TeacherClassroomAssignment;
 import com.example.springcase.model.User;
+import com.example.springcase.model.role;
 import com.example.springcase.repository.TeacherClassroomAssignmentRepository;
 import com.example.springcase.repository.UserRepository;
 
@@ -40,7 +41,7 @@ public class TeacherService {
                 .collect(Collectors.toList());
 
         // Burada UserRepository'de bu methodun tanımlı olması gerekir
-        List<User> students = userRepository.findByClassroomIdInAndRole(classroomIds, Role.STUDENT);
+        List<User> students = userRepository.findByClassroomIdInAndRole(classroomIds, role.ROLE_STUDENT);
 
         return students.stream()
                 .map(s -> new UserDto(s.getId(), s.getUsername(), s.getEmail()))

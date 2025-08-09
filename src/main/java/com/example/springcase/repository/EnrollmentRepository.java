@@ -8,7 +8,6 @@ import java.util.UUID;
 
 public interface EnrollmentRepository extends JpaRepository<Enrollment, UUID> {
 
-    List<Enrollment> findByStudentId(Long studentId);
 
     List<Enrollment> findByStudent_Id(UUID studentId);
 }

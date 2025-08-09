@@ -17,7 +17,7 @@ public class StudentCourseService {
     private final EnrollmentRepository enrollmentRepository;
 
     public List<CourseDto> getCoursesByStudentId(UUID studentId) {
-        List<Enrollment> enrollments = enrollmentRepository.findByStudentId(studentId);
+        List<Enrollment> enrollments = enrollmentRepository.findByStudent_Id(studentId);
 
         return enrollments.stream()
                 .map(e -> new CourseDto(

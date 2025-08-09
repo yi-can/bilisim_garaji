@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/organizations")
@@ -24,7 +25,26 @@ public class OrganizationController {
 
     @GetMapping
     public ResponseEntity<List<OrganizationDto>> getAllOrganizations() {
-        return ResponseEntity.ok(organizationService.getAllOrganizations());
+        List<OrganizationDto> list = organizationService.getAllOrganizations();
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrganizationDto> getOrganizationById(@PathVariable UUID id) {
+        OrganizationDto dto = organizationService.findById(id);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<OrganizationDto> updateOrganization(@PathVariable UUID id, @Valid @RequestBody OrganizationDto dto) {
+        OrganizationDto updated = organizationService.updateOrganization(id, dto);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOrganization(@PathVariable UUID id) {
+        organizationService.deleteOrganization(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

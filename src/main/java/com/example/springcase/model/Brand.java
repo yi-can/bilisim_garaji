@@ -8,20 +8,22 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "brands")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Brand {
+
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name="UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(updatable = false, nullable = false)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(unique = true, nullable = false)
-    private String code;  // otomatik atanacak (krm1, krm2 ...)
+    @Column(nullable = false, unique = true)
+    private String code;
 }

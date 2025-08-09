@@ -1,5 +1,6 @@
 package com.example.springcase.controller;
 
+import com.example.springcase.dto.ClassroomDto;
 import com.example.springcase.model.Classroom;
 import com.example.springcase.model.User;
 import com.example.springcase.model.Role;
@@ -8,6 +9,8 @@ import com.example.springcase.service.ClassroomService;
 import com.example.springcase.service.PermissionService;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
