@@ -1,4 +1,4 @@
-# SpringCase Projesi
+# Kurumsal Multi-Tenant LMS Backend
 
 YİĞİTCAN ABAY 09.08.2025-13:00 
 
